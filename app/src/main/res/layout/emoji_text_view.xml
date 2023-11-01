@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.vanniktech.emoji.EmojiTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:textSize="24sp"
+    android:layout_marginBottom="8dp"
+    app:emojiSize="24sp"
+    android:background="#FFE0B2">
+
+</com.vanniktech.emoji.EmojiTextView>

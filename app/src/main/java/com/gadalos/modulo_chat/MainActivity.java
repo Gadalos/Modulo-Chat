@@ -6,11 +6,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+
+import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.EmojiTextView;
+import com.vanniktech.emoji.emoji.Emoji;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,11 +34,11 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    TextView textView;
     private EditText escribirMensaje;
-    private ImageButton btnEnviar;
+    private ImageButton btnEnviar, emojiButton;
     private List<Mensaje> mensajeList;
     private MensajeAdapter mensajeAdapter;
+    private LinearLayout messageLayout;
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
 
@@ -47,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         escribirMensaje = (EditText) findViewById(R.id.escribirMensaje);
         btnEnviar = (ImageButton) findViewById(R.id.btnEnviar);
+        emojiButton = (ImageButton) findViewById(R.id.emojiButton);
+        messageLayout = (LinearLayout) findViewById(R.id.messageLayout);
 
         //Configuracion del RecyclerView
         mensajeAdapter = new MensajeAdapter(mensajeList);
@@ -55,11 +61,23 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        EmojiPopup emojiPopup = EmojiPopup.Builder.fromRootView(findViewById(R.id.messageLayout)).build(escribirMensaje);
+        emojiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                emojiPopup.toggle();
+            }
+        });
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String pregunta = escribirMensaje.getText().toString();
                 mensajeChat(pregunta, Mensaje.MENSAJE_ENVIADO_YO);
+                EmojiTextView emojiTextView = (EmojiTextView) LayoutInflater
+                        .from(view.getContext())
+                        .inflate(R.layout.emoji_text_view, messageLayout, false);
+                messageLayout.addView(emojiTextView);
+                escribirMensaje.setEnabled(true);
                 escribirMensaje.setText("");
                 llamarAPI(pregunta);
             }
