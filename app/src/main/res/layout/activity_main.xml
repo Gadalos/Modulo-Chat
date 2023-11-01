@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".MainActivity">
+
+    <!-- RecyclerView para mostrar los mensajes -->
+    <ImageButton
+        android:id="@+id/btnRegreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FFFEFE"
+        android:src="@drawable/retroceder"/>
+
+    <!-- Layout para el mensaje de entrada y el botón de enviar -->
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="82dp"
+        android:layout_height="32dp"
+        android:layout_above="@+id/recyclerView"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="109dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="13dp"
+        android:layout_toEndOf="@+id/btnRegreso"
+        android:text="Travis"
+        android:fontFamily="@font/martel_normal"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/messageLayout"
+        android:layout_below="@+id/btnRegreso"
+        android:layout_marginTop="5dp"
+
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/messageLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/messageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Botón para seleccionar emojis -->
+
+        <!-- Campo de texto para ingresar el mensaje -->
+        <ImageButton
+            android:id="@+id/emojiButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFEFE"
+            android:src="@drawable/icons8_feliz_32" />
+
+        <EditText
+            android:id="@+id/escribirMensaje"
+            android:layout_width="287dp"
+            android:layout_height="53dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Escribe un mensaje"
+            android:padding="8dp" />
+
+        <!-- Botón para enviar el mensaje -->
+        <ImageButton
+            android:id="@+id/btnEnviar"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/enviar"
+            android:backgroundTint="#FFFEFE"
+            />
+    </LinearLayout>
+
+</RelativeLayout>
