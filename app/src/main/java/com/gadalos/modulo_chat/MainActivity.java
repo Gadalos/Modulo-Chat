@@ -77,11 +77,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     void respondeGPT(String responde){
+        mensajeList.remove(mensajeList.size()-1);
         mensajeChat(responde, Mensaje.MENSAJE_ENVIADO_GPT);
     }
 
     void llamarAPI(String pregunta) {
         //okhttp
+        mensajeList.add(new Mensaje("Esperando ... ", Mensaje.MENSAJE_ENVIADO_GPT));
 
         JSONObject jsonBody = new JSONObject();
 
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "Bearer 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")
+                .header("Authorization", "Bearer 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")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()){
                     String respuesta = response.body().string();
-                        JSONObject jsonObject = null;
+                    JSONObject jsonObject = null;
                     try {
                         jsonObject = new JSONObject(respuesta);
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-            }else {
+                }else {
                     String errorResponse = response.body().string(); // Obtener el contenido del error como cadena
                     respondeGPT("Error al conectar con el servidor " + errorResponse);
                 }
