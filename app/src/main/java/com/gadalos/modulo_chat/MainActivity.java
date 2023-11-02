@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mensajeList = new ArrayList<>();
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void mensajeChat(String mensaje, String enviadoPor){
+    void mensajeChat(String mensaje, String enviadoPor) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -94,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    void respondeGPT(String responde){
-        mensajeList.remove(mensajeList.size()-1);
+
+    void respondeGPT(String responde) {
+        mensajeList.remove(mensajeList.size() - 1);
         mensajeChat(responde, Mensaje.MENSAJE_ENVIADO_GPT);
     }
 
@@ -105,18 +108,42 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject jsonBody = new JSONObject();
 
+        JSONArray promptMessages = new JSONArray();
+
+
         try {
             jsonBody.put("model", "gpt-3.5-turbo");
-            jsonBody.put("prompt", pregunta);
             jsonBody.put("max_tokens", 150);
             jsonBody.put("temperature", 0);
+
+            JSONObject initialPrompt = new JSONObject();
+            initialPrompt.put("role", "system");
+            initialPrompt.put("content", "Hola, eres un asistente virtual");
+
+            mensajeList.forEach(mensaje -> {
+                try {
+                    JSONObject promptMessage = new JSONObject();
+                    promptMessage.put("role", mensaje.getEnviadoPor().equals(Mensaje.MENSAJE_ENVIADO_GPT) ? "system" : "user");
+                    promptMessage.put("content", mensaje.getMensaje());
+                    promptMessages.put(promptMessage);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            promptMessages.put(initialPrompt);
+
+            jsonBody.put("messages", promptMessages);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
+        String OPEN_IA_API_KEY = "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";
+        String OPEN_IA_URL = "https://api.openai.com/v1/chat/completions";
         Request request = new Request.Builder()
-                .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "Bearer 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")
+                .url(OPEN_IA_URL)
+                .header("Authorization", "Bearer ".concat(OPEN_IA_API_KEY))
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -127,18 +154,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     String respuesta = response.body().string();
                     JSONObject jsonObject = null;
                     try {
                         jsonObject = new JSONObject(respuesta);
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                        String resultado = jsonArray.getJSONObject(0).getString("text");
+                        String resultado = jsonArray.getJSONObject(0).getJSONObject("message").getString("content");
+                        Log.d("RESPUESTA", resultado);
                         respondeGPT(resultado.trim());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }else {
+                } else {
                     String errorResponse = response.body().string(); // Obtener el contenido del error como cadena
                     respondeGPT("Error al conectar con el servidor " + errorResponse);
                 }
